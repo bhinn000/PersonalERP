@@ -10,13 +10,16 @@ namespace PersonalERP.Entity
     {
         public int PaymentMethod { get; set; }
         public int Id { get; set; }
-        public int CustomerId { get; set; }
+        //public int CustomerId { get; set; }
         public decimal TotalAmount { get; set; }
         public decimal TotalBillPaid { get; set; }
         public decimal TotalBillRemaining { get; set; }
-        public virtual Customer Customer { get; set; }
+        //public virtual Customer Customer { get; set; }
         //public int OrgId { get; set; }
         //public Organization Organization { get; set; }
         public int? BankId { get; set; }
+
+        public int BPId { get; set; }
+        public virtual BillPaymentCredit BillPaymentCredit { get; set; }
     }
 }

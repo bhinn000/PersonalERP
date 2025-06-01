@@ -1,4 +1,5 @@
-﻿//namespace PersonalERP.Entity
+﻿//no need for now
+//namespace PersonalERP.Entity
 //{
 //    public class Organization : DateTimeEntity
 //    {

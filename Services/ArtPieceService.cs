@@ -1,8 +1,7 @@
-﻿using PersonalERP.Entity;
-using PersonalERP.Interfaces;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using PersonalERP.DTO;
+using PersonalERP.Entity;
 using PersonalERP.Interface;
 
 namespace PersonalERP.Service
@@ -11,36 +10,53 @@ namespace PersonalERP.Service
     {
         private readonly IArtPieceRepo _repo;
         private readonly ILogger<ArtPieceService> _logger;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IUserContextService _userContextService;
 
-        public ArtPieceService(IArtPieceRepo repo, ILogger<ArtPieceService> logger)
+        public ArtPieceService(IArtPieceRepo repo, ILogger<ArtPieceService> logger,
+            IHttpContextAccessor httpContextAccessor, IUserContextService userContextService)
         {
             _repo = repo;
             _logger = logger;
+            _httpContextAccessor = httpContextAccessor;
+            _userContextService = userContextService;
         }
 
-        public async Task<List<ArtPiece>> GetAllAsync()
+        public async Task<List<ArtPieceDTO>> GetAllAsync()
         {
             try
             {
-                return await _repo.GetAllAsync();
+                var entities = await _repo.GetAllAsync();
+                return entities.Select(e => new ArtPieceDTO
+                {
+                    Id = e.Id,
+                    Name = e.Name,
+                    Description = e.Description,
+                    Price = e.Price
+                }).ToList();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Service error in GetAllAsync.");
-                return new List<ArtPiece>();
+                return new List<ArtPieceDTO>();
             }
         }
 
-        public async Task<ArtPiece> GetByIdAsync(int id)
+        public async Task<ArtPieceDTO> GetByIdAsync(int id)
         {
             try
             {
-                var artPiece = await _repo.GetByIdAsync(id);
-                if (artPiece == null) 
-                {
+                var artPiece = await _repo.GetArtPiece(id);
+                if (artPiece == null)
                     throw new KeyNotFoundException($"ArtPiece with ID {id} not found.");
-                }
-                return artPiece;
+
+                return new ArtPieceDTO
+                {
+                    Id = artPiece.Id,
+                    Name = artPiece.Name,
+                    Description = artPiece.Description,
+                    Price = artPiece.Price
+                };
             }
             catch (Exception ex)
             {
@@ -49,11 +65,28 @@ namespace PersonalERP.Service
             }
         }
 
-        public async Task<ArtPiece> AddAsync(ArtPiece artPiece)
+        public async Task<ArtPieceDTO> AddAsync(CreateArtPieceDTO dto)
         {
             try
             {
-                return await _repo.AddAsync(artPiece);
+                var entity = new ArtPiece
+                {
+                    Name = dto.Name,
+                    Description = dto.Description,
+                    Price = dto.Price,
+                    CreatedDate = DateTime.UtcNow,
+                    CreatedBy = _userContextService.GetCurrentUsername() ?? "UnknownUser"
+                };
+
+                var created = await _repo.AddAsync(entity);
+
+                return new ArtPieceDTO
+                {
+                    Id = created.Id,
+                    Name = created.Name,
+                    Description = created.Description,
+                    Price = created.Price
+                };
             }
             catch (Exception ex)
             {
@@ -62,15 +95,33 @@ namespace PersonalERP.Service
             }
         }
 
-        public async Task<ArtPiece> UpdateAsync(ArtPiece artPiece)
+        public async Task<ArtPieceDTO> UpdateAsync(int id, UpdateArtPieceDTO dto)
         {
             try
             {
-                return await _repo.UpdateAsync(artPiece);
+                var existing = await _repo.GetArtPiece(id);
+                if (existing == null)
+                    return null;
+
+                existing.Name = dto.Name;
+                existing.Description = dto.Description;
+                existing.Price = dto.Price;
+                existing.ModifiedDate = DateTime.UtcNow;
+                existing.ModifiedBy = _userContextService.GetCurrentUsername() ?? "UnknownUser";
+
+                var updated = await _repo.UpdateAsync(existing);
+
+                return new ArtPieceDTO
+                {
+                    Id = updated.Id,
+                    Name = updated.Name,
+                    Description = updated.Description,
+                    Price = updated.Price
+                };
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Service error in UpdateAsync for ID: {artPiece.Id}");
+                _logger.LogError(ex, $"Service error in UpdateAsync for ID: {id}");
                 return null;
             }
         }
@@ -79,7 +130,17 @@ namespace PersonalERP.Service
         {
             try
             {
-                return await _repo.DeleteAsync(id);
+                var artPiece = await _repo.GetArtPiece(id);
+                if (artPiece == null)
+                {
+                    _logger.LogWarning($"Attempted to delete ArtPiece with ID {id} but it was not found.");
+                    return false;
+                }
+
+                artPiece.DeletedDate = DateTime.UtcNow;
+                artPiece.DeletedBy = _userContextService.GetCurrentUsername() ?? "UnknownUser";
+                await _repo.UpdateAsync(artPiece);
+                return true;
             }
             catch (Exception ex)
             {

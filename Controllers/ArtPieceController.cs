@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PersonalERP.Entity;
-using PersonalERP.Service;
+using PersonalERP.DTO;
+using PersonalERP.Interface;
 
 namespace PersonalERP.Controllers
 {
@@ -38,10 +38,6 @@ namespace PersonalERP.Controllers
             try
             {
                 var artPiece = await _service.GetByIdAsync(id);
-                //if (artPiece == null)
-                //{
-                //    return NotFound();
-                //}
                 return Ok(artPiece);
             }
             catch (KeyNotFoundException knfEx)
@@ -57,20 +53,17 @@ namespace PersonalERP.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] ArtPiece artPiece)
+        public async Task<IActionResult> Create([FromBody] CreateArtPieceDTO dto)
         {
-            if (artPiece == null)
-            {
+            if (dto == null)
                 return BadRequest("ArtPiece object is null");
-            }
 
             try
             {
-                var created = await _service.AddAsync(artPiece);
+                var created = await _service.AddAsync(dto);
                 if (created == null)
-                {
                     return StatusCode(500, "Failed to create art piece");
-                }
+
                 return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
             }
             catch (Exception ex)
@@ -81,20 +74,17 @@ namespace PersonalERP.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] ArtPiece artPiece)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateArtPieceDTO dto)
         {
-            if (artPiece == null || artPiece.Id != id)
-            {
+            if (dto == null)
                 return BadRequest("Invalid art piece data");
-            }
 
             try
             {
-                var updated = await _service.UpdateAsync(artPiece);
+                var updated = await _service.UpdateAsync(id, dto);
                 if (updated == null)
-                {
                     return NotFound($"Art piece with ID {id} not found");
-                }
+
                 return Ok(updated);
             }
             catch (Exception ex)
@@ -111,9 +101,8 @@ namespace PersonalERP.Controllers
             {
                 var deleted = await _service.DeleteAsync(id);
                 if (!deleted)
-                {
                     return NotFound($"Art piece with ID {id} not found");
-                }
+
                 return NoContent();
             }
             catch (Exception ex)

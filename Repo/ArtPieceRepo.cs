@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PersonalERP.Entity;
 using PersonalERP.Interface;
-using PersonalERP.Interfaces;
+
 
 
 namespace PersonalERP.Repository

@@ -15,12 +15,11 @@ namespace PersonalERP.Entity
         public decimal TotalBillPayable { get; set; }
 
         public virtual ICollection<BillPaymentCredit> BillPaymentCredits { get; set; }
-        public virtual ICollection<PayingOffCredit> PayingOffCredits { get; set; }
+        //public virtual ICollection<PayingOffCredit> PayingOffCredits { get; set; }
         public decimal InitialCreditLimit { get; set; }
         public decimal? CurrentCreditLimit { get; set; }
 
-        public virtual ICollection<CraftsOrder> CraftsOrder{ get; set; }
-        public int CraftOrderId { get; set; }
+        public virtual ICollection<CraftsOrder>? CraftsOrders{ get; set; }
 
     }
 }

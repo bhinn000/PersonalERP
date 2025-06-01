@@ -1,92 +1,92 @@
-﻿using Microsoft.EntityFrameworkCore;
-using PersonalERP.Entity;
-namespace PersonalERP.Repo
-{
-    public class CraftsOrderRepo
-    {
-        private readonly AppDbContext _appDbContext;
+﻿//using Microsoft.EntityFrameworkCore;
+//using PersonalERP.Entity;
+//namespace PersonalERP.Repo
+//{
+//    public class CraftsOrderRepo
+//    {
+//        private readonly AppDbContext _appDbContext;
 
-        public CraftsOrderRepo(AppDbContext appDbContext)
-        {
-            try
-            {
-                _appDbContext = appDbContext;
-            }
-             catch (Exception ex)
-            {
-                throw new Exception($"An error occurred while creating the order: {ex.Message}", ex);
-            }
-        }
+//        public CraftsOrderRepo(AppDbContext appDbContext)
+//        {
+//            try
+//            {
+//                _appDbContext = appDbContext;
+//            }
+//             catch (Exception ex)
+//            {
+//                throw new Exception($"An error occurred while creating the order: {ex.Message}", ex);
+//            }
+//        }
 
-        public async Task<int> CreateAsync(CraftsOrder newOrder)
-        {
-            try{
-                _appDbContext.CraftsOrders.Add(newOrder);
-                await _appDbContext.SaveChangesAsync();
-                return newOrder.Id;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"An error occurred while getting the order: {ex.Message}", ex);
-            }
-        }
+//        public async Task<int> CreateAsync(CraftsOrder newOrder)
+//        {
+//            try{
+//                _appDbContext.CraftsOrders.Add(newOrder);
+//                await _appDbContext.SaveChangesAsync();
+//                return newOrder.Id;
+//            }
+//            catch (Exception ex)
+//            {
+//                throw new Exception($"An error occurred while getting the order: {ex.Message}", ex);
+//            }
+//        }
 
-        public async Task<CraftsOrder?> GetByIdAsync(int id)
-        {
-            try{
-                return await _appDbContext.CraftsOrders.Include(x => x.Customer).Include(x=>x.Art).FirstOrDefaultAsync(y => y.Id == id);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"An error occurred while getting the order: {ex.Message}", ex);
-            }
-        }
+//        public async Task<CraftsOrder?> GetByIdAsync(int id)
+//        {
+//            try{
+//                return await _appDbContext.CraftsOrders.Include(x => x.Customer).Include(x=>x.Art).FirstOrDefaultAsync(y => y.Id == id);
+//            }
+//            catch (Exception ex)
+//            {
+//                throw new Exception($"An error occurred while getting the order: {ex.Message}", ex);
+//            }
+//        }
 
-        public async Task<CraftsOrder?> GetInfoByCraftsOrder(int craftsOrderId)
-        {
-            try
-            {
-                var craftsOrderInfo = await _appDbContext.CraftsOrders.FindAsync(craftsOrderId);
-                if (craftsOrderInfo != null)
-                {
-                    return craftsOrderInfo;
-                }
+//        public async Task<CraftsOrder?> GetInfoByCraftsOrder(int craftsOrderId)
+//        {
+//            try
+//            {
+//                var craftsOrderInfo = await _appDbContext.CraftsOrders.FindAsync(craftsOrderId);
+//                if (craftsOrderInfo != null)
+//                {
+//                    return craftsOrderInfo;
+//                }
                
-            }
-            catch (Exception ex) 
-            {
-                return null;
-            }
-        }
+//            }
+//            catch (Exception ex) 
+//            {
+//                return null;
+//            }
+//        }
         
-        public async Task<IEnumerable<CraftsOrder>> GetAllAsync()
-        {
-            try{
-                return await _appDbContext.CraftsOrders
-                               .Include(c => c.Customer)
-                               .Include(x => x.Art)
-                               .ToListAsync();
-            }
-             catch (Exception ex)
-            {
-                throw new Exception($"An error occurred while getting the order: {ex.Message}", ex);
-            }
-        }
+//        public async Task<IEnumerable<CraftsOrder>> GetAllAsync()
+//        {
+//            try{
+//                return await _appDbContext.CraftsOrders
+//                               .Include(c => c.Customer)
+//                               .Include(x => x.Art)
+//                               .ToListAsync();
+//            }
+//             catch (Exception ex)
+//            {
+//                throw new Exception($"An error occurred while getting the order: {ex.Message}", ex);
+//            }
+//        }
 
-        public async Task<bool> DeleteAsync(int id)
-        {
-            try
-            {
-                var order = await _appDbContext.CraftsOrders.FindAsync(id);
-                if (order == null) return false;
+//        public async Task<bool> DeleteAsync(int id)
+//        {
+//            try
+//            {
+//                var order = await _appDbContext.CraftsOrders.FindAsync(id);
+//                if (order == null) return false;
 
-                _appDbContext.CraftsOrders.Remove(order);
-                return await _appDbContext.SaveChangesAsync() > 0;
-            }
-             catch (Exception ex)
-            {
-                throw new Exception($"An error occurred while deleting the order: {ex.Message}", ex);
-            }
-        }
-    }
-}
+//                _appDbContext.CraftsOrders.Remove(order);
+//                return await _appDbContext.SaveChangesAsync() > 0;
+//            }
+//             catch (Exception ex)
+//            {
+//                throw new Exception($"An error occurred while deleting the order: {ex.Message}", ex);
+//            }
+//        }
+//    }
+//}

@@ -1,6 +1,6 @@
-﻿namespace PersonalERP.Repo
-{
-    public class PayingOffCreditRepo
-    {
-    }
-}
+﻿//namespace PersonalERP.Repo
+//{
+//    public class PayingOffCreditRepo
+//    {
+//    }
+//}

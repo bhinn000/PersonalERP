@@ -1,6 +1,4 @@
-﻿using PersonalERP.Entity;
-using PersonalERP.Helper;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace PersonalERP.Entity
 {
@@ -11,20 +9,18 @@ namespace PersonalERP.Entity
         {
             BillPaymentCredit = new HashSet<BillPaymentCredit>();
         }
-
-        [Key]
         public int Id { get; set; }
         public string ArtName { get; set; }
         public string OrderRef { get; set; } = null!;
         public decimal Price { get; set; }
         public string? Description { get; set; }
-        public int CustomerId { get; set; } 
+        public int CustomerId { get; set; }
         public virtual Customer Customer { get; set; }
         public int ArtId { get; set; }
         public virtual ArtPiece Art { get; set; }
         public virtual ICollection<BillPaymentCredit> BillPaymentCredit { get; set; }
 
-       
+
     }
 }
 

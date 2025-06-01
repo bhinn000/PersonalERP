@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PersonalERP.Entity
 {
-    public class DateTimeEntity
+    public abstract class DateTimeEntity
     {
         public DateTime CreatedDate { get; set; }
 

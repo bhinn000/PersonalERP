@@ -1,7 +1,9 @@
+using PersonalERP;
+using Microsoft.EntityFrameworkCore;
 using PersonalERP.Interface;
-using PersonalERP.Interfaces;
-using PersonalERP.Repo;
 using PersonalERP.Repository;
+using PersonalERP.Service;
+using PersonalERP.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,7 +14,12 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<IArtPieceRepo, ArtPieceRepo>();
+builder.Services.AddScoped<IArtPieceService , ArtPieceService>();
+builder.Services.AddScoped<IUserContextService, UserContextService>();
+    
 
 var app = builder.Build();
 
