@@ -9,7 +9,8 @@ namespace PersonalERP.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
+    [AllowAnonymous]
 
     //no need of talking abut payment full or half in this
     public class CraftsOrderController : ControllerBase

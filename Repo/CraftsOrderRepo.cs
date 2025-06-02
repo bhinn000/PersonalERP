@@ -63,20 +63,36 @@ namespace PersonalERP.Repo
             }
         }
 
+        //public async Task<IEnumerable<CraftsOrder>> GetAllAsync()
+        //{
+        //    try
+        //    {
+        //        return await _appDbContext.CraftsOrders
+        //                       .Include(c => c.Customer)
+        //                       .Include(x => x.Art)
+        //                       .ToListAsync();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception($"An error occurred while getting the order: {ex.Message}", ex);
+        //    }
+        //}
+        //// In CraftsOrderRepository.cs
         public async Task<IEnumerable<CraftsOrder>> GetAllAsync()
         {
             try
             {
                 return await _appDbContext.CraftsOrders
-                               .Include(c => c.Customer)
-                               .Include(x => x.Art)
-                               .ToListAsync();
+                                .Include(c => c.Customer)
+                                .Include(x => x.Art)
+                                .ToListAsync();
             }
             catch (Exception ex)
             {
                 throw new Exception($"An error occurred while getting the order: {ex.Message}", ex);
             }
         }
+
 
         public async Task<bool> DeleteAsync(int id)
         {

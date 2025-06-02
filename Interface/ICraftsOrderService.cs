@@ -7,7 +7,7 @@ namespace PersonalERP.Interface
     {
         Task<int> CreateAsync(CreateCraftsOrderDto dto);
         Task<CraftsOrder?> GetByIdAsync(int id);
-        Task<IEnumerable<CraftsOrder>> GetAllAsync();
+        Task<IEnumerable<CraftsOrderDTO>> GetAllAsync();
         Task<bool> DeleteAsync(int id);
     }
 }

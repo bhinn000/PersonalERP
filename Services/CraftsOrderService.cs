@@ -212,17 +212,45 @@ namespace PersonalERP.Services
 
         }
 
-        public async Task<IEnumerable<CraftsOrder>> GetAllAsync()
+        public async Task<IEnumerable<CraftsOrderDTO>> GetAllAsync()
         {
             try
             {
-                return await _craftsOrderRepo.GetAllAsync();
+                var orders= await _craftsOrderRepo.GetAllAsync();
+                return orders.Select(order => new CraftsOrderDTO
+                 {
+                     Id = order.Id,
+                     OrderRef = order.OrderRef,
+                     ArtName = order.ArtName,
+                     Price = order.Price,
+                     Description = order.Description,
+                     CustomerName = order.Customer.Name
+                 });
             }
             catch (Exception ex)
             {
                 throw new Exception($"An error occurred while getting the order: {ex.Message}", ex);
             }
         }
+
+        //public async Task<IEnumerable<CraftsOrderDTO>> GetAllAsync()
+        //{
+        //    var orders = await _appDbContext.CraftsOrders
+        //                    .Include(c => c.Customer)
+        //                    .Include(a => a.Art)
+        //                    .ToListAsync();
+
+        //    return orders.Select(order => new CraftsOrderDTO
+        //    {
+        //        Id = order.Id,
+        //        OrderRef = order.OrderRef,
+        //        ArtName = order.ArtName,
+        //        Price = order.Price,
+        //        Description = order.Description,
+        //        CustomerName = order.Customer.Name
+        //    });
+        //}
+
 
         public async Task<bool> DeleteAsync(int id)
         {
