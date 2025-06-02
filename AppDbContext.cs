@@ -42,8 +42,8 @@ namespace PersonalERP
 
             modelBuilder.Entity<BillPaymentCredit>()
                 .HasOne(b => b.CraftsOrder)
-                .WithMany(c => c.BillPaymentCredit)
-                .HasForeignKey(b => b.CraftsOrderId)
+                .WithOne(c => c.BillPaymentCredit)
+                .HasForeignKey<BillPaymentCredit>(b => b.CraftsOrderId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<PayingOffCredit>()

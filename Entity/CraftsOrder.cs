@@ -5,20 +5,22 @@ namespace PersonalERP.Entity
     public class CraftsOrder : DateTimeEntity
     {
         //MenuOrder
-        public CraftsOrder()
-        {
-            BillPaymentCredit = new HashSet<BillPaymentCredit>();
-        }
+        //public CraftsOrder()
+        //{
+        //    BillPaymentCredit = new HashSet<BillPaymentCredit>();
+        //}
         public int Id { get; set; }
-        public string ArtName { get; set; }
         public string OrderRef { get; set; } = null!;
+        public string ArtName { get; set; }
         public decimal Price { get; set; }
         public string? Description { get; set; }
         public int CustomerId { get; set; }
         public virtual Customer Customer { get; set; }
         public int ArtId { get; set; }
         public virtual ArtPiece Art { get; set; }
-        public virtual ICollection<BillPaymentCredit> BillPaymentCredit { get; set; }
+        //public virtual ICollection<BillPaymentCredit> BillPaymentCredit { get; set; }
+        public int? BillPaymentId { get;set; }
+        public virtual BillPaymentCredit? BillPaymentCredit { get; set; }
 
 
     }
