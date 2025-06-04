@@ -25,7 +25,7 @@ namespace PersonalERP.Repo
         {
             try
             {
-                return await _context.Customers.ToListAsync();
+                return await _context.Customers.Include(c=>c.CraftsOrders).ToListAsync();
             }
             catch (Exception ex)
             {

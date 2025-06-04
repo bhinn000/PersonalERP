@@ -1,4 +1,35 @@
-﻿//namespace PersonalERP.DTO
+﻿// DTO for CraftsOrder without Customer reference (to avoid cycle)
+public class CraftsOrderDto
+{
+    public int Id { get; set; }
+    public string OrderRef { get; set; } = null!;
+    public string ArtName { get; set; }
+    public decimal Price { get; set; }
+    public string? Description { get; set; }
+    public int ArtId { get; set; }
+    // Optionally add more fields you want to expose
+}
+
+// DTO for Customer including CraftsOrders as DTO list
+public class CustomerDto
+{
+    public int Id { get; set; }
+    public string? UserId { get; set; }
+    public string Name { get; set; } = null!;
+    public string Address { get; set; } = null!;
+    public string PhoneNum { get; set; } = null!;
+    public decimal TotalBillAmount { get; set; }
+    public decimal? TotalBillPaid { get; set; }
+    public decimal TotalBillPayable { get; set; }
+    public decimal InitialCreditLimit { get; set; }
+    public decimal? CurrentCreditLimit { get; set; }
+
+    // CraftsOrders represented as list of DTOs
+    public List<CraftsOrderDto> CraftsOrders { get; set; } = new List<CraftsOrderDto>();
+}
+
+
+//namespace PersonalERP.DTO
 //{
 //    //public partial class MenuOrderDetailCreateDto
 //    //{
@@ -77,35 +108,6 @@
 //    //    public string OTP { get; set; }
 //    //    public IList<MenuOrderDetailCreateDto> Items { get; set; } = new List<MenuOrderDetailCreateDto>();
 //    //}
-
-public class CreateCraftsOrderDto
-{
-    //has to check if login
-    public int ArtId { get; set; }
-    public string OrderRef { get; set; } = null!;
-    public string? CustomerId { get; set; }
-    public string? CustomerName { get; set; }
-    public string? Address { get; set; }
-    public string PhoneNum { get; set; }
-    public int? BillPaymentId { get; set; }
-    public string? Description { get; set; }
-    public decimal? InitialCreditLimit { get; set; }
-}
-
-public class CraftsOrderDTO
-{
-    public int Id { get; set; }
-    public string OrderRef { get; set; }
-    public string ArtName { get; set; }
-    public decimal Price { get; set; }
-    public string? Description { get; set; }
-
-    public int CustomerId { get; set; }
-    public string CustomerName { get; set; }
-
-    public int ArtId { get; set; }
-    public string ArtTitle { get; set; }
-}
 
 
 //    //public partial class CreateBillingMenuOrderDto

@@ -1,4 +1,5 @@
-﻿using PersonalERP.Entity;
+﻿using Microsoft.EntityFrameworkCore;
+using PersonalERP.Entity;
 using PersonalERP.Interface;
 
 namespace PersonalERP.Services
@@ -14,18 +15,46 @@ namespace PersonalERP.Services
             _logger = logger;
         }
 
-        public async Task<List<Customer>> GetAllAsync()
+        public async Task<List<CustomerDto>> GetAllAsync()
         {
             try
             {
-                return await _repo.GetAllAsync();
+                List<Customer> customers= await _repo.GetAllAsync();
+
+                var customerDtos = customers.Select(c => new CustomerDto
+                {
+                    Id = c.Id,
+                    UserId = c.UserId,
+                    Name = c.Name,
+                    Address = c.Address,
+                    PhoneNum = c.PhoneNum,
+                    TotalBillAmount = c.TotalBillAmount,
+                    TotalBillPaid = c.TotalBillPaid,
+                    TotalBillPayable = c.TotalBillPayable,
+                    InitialCreditLimit = c.InitialCreditLimit,
+                    CurrentCreditLimit = c.CurrentCreditLimit,
+                    CraftsOrders = c.CraftsOrders?.Select(co => new CraftsOrderDto
+                    {
+                        Id = co.Id,
+                        OrderRef = co.OrderRef,
+                        ArtName = co.ArtName,
+                        Price = co.Price,
+                        Description = co.Description,
+                        ArtId = co.ArtId
+                    }).ToList() ?? new List<CraftsOrderDto>()
+                }).ToList();
+
+                return customerDtos;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Service error in GetAllAsync.");
-                return new List<Customer>();
+                return new List<CustomerDto>();
             }
         }
+
+
+
 
         public async Task<Customer> GetByIdAsync(int id)
         {
