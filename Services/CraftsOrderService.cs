@@ -135,6 +135,14 @@ namespace PersonalERP.Services
                 if (oldCustomer is not null) //if old customer
                 {
                     theCustomer = oldCustomer;
+                    var totalValueForOrderedArtYet = orderedArtInfo.Price + theCustomer.TotalBillAmount;
+                    var totalBillPayableRemForOne = orderedArtInfo.Price + theCustomer.TotalBillPayable;
+
+                    //Id = theCustomer.Id,
+                    theCustomer.TotalBillAmount = totalValueForOrderedArtYet;
+                    theCustomer.TotalBillPayable = totalBillPayableRemForOne;
+
+                    await _customerRepo.UpdateAsync(theCustomer);
                 }
                 else // if new customer
                 {
@@ -144,6 +152,8 @@ namespace PersonalERP.Services
                     {
                         throw new Exception("Seem like new customer , please give all information");
                     }
+
+     
                     theCustomer = new Customer
                     {
                         UserId = createCraftsOrderDto.CustomerId,
@@ -157,10 +167,9 @@ namespace PersonalERP.Services
                         CreatedBy = _userContextService.GetCurrentUsername() ?? "UnknownUser",
                     
                      };
-
                     await _customerRepo.AddAsync(theCustomer);
-
                 }
+              
 
                 var newOrder = new CraftsOrder
                 {
