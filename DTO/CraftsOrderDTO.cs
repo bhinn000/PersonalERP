@@ -13,6 +13,7 @@
         public int? BillPaymentId { get; set; }
         public string? Description { get; set; }
         public decimal? InitialCreditLimit { get; set; }
+        public decimal? InitialPayment { get; set; }
     }
 
     public class CraftsOrderDTO

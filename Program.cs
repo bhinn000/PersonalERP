@@ -24,6 +24,8 @@ builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<ICraftsOrderRepo, CraftsOrderRepo>();
 builder.Services.AddScoped<ICraftsOrderService, CraftsOrderService>();
 builder.Services.AddScoped<IUserContextService, UserContextService>();
+builder.Services.AddScoped<IBillPaymentCreditRepo , BillPaymentCreditRepo> ();
+//builder.Services.
     
 
 var app = builder.Build();

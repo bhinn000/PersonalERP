@@ -112,110 +112,110 @@ namespace PersonalERP.Controllers
 }
 
 
-//        [HttpPatch("Billing/{id}/Payment")]
-//        public async Task<IActionResult> Payment(int id, double? AddDiscount, PaymentTypeMaybeCredit type,
-//            string? remarks, string? Name,
-//            string? PhoneNumber, string? Address, int? BankId, CreateBillPaymentCredit_DTO? createCustomerBillDTO)
+//[HttpPatch("Billing/{id}/Payment")]
+//public async Task<IActionResult> Payment(int id, double? AddDiscount, PaymentTypeMaybeCredit type,
+//    string? remarks, string? Name,
+//    string? PhoneNumber, string? Address, int? BankId, CreateBillPaymentCredit_DTO? createCustomerBillDTO)
+//{
+//    try
+//    {
+//        string token = Request.Headers["Authorization"].ToString().Substring("Bearer ".Length).Trim();
+
+//        var CustomerData = new CustomerDataDto();
+//        if (Name != null)
 //        {
-//            try
-//            {
-//                string token = Request.Headers["Authorization"].ToString().Substring("Bearer ".Length).Trim();
-
-//                var CustomerData = new CustomerDataDto();
-//                if (Name != null)
-//                {
-//                    CustomerData.Name = Name;
-//                    CustomerData.PhoneNumber = PhoneNumber;
-//                    CustomerData.Address = Address;
-//                }
-
-//                var retData = await _craftOrderService.MakePayment(id, remarks, CustomerData, AddDiscount, type);
-
-//                string salesRemark = "Sales - " + remarks;
-//                if (type == PaymentTypeMaybeCredit.Cash)
-//                {
-//                    await _counterCashTransactionService.AddCashAsync(token, (decimal)retData.PaidAmount, salesRemark);
-//                }
-
-//                if (type == PaymentTypeMaybeCredit.Credit)
-//                {
-//                    if (Name == null || PhoneNumber == null || Address == null)
-//                    {
-//                        throw new Exception("Invalid customer data provided. please fill all fields !!!");
-//                    }
-
-//                    if (createCustomerBillDTO == null)
-//                    {
-//                        throw new Exception("Bill information required");
-//                    }
-
-//                    if (createCustomerBillDTO.MenuOrderId == 0 || createCustomerBillDTO.PaidAmount < 0)
-//                    {
-//                        throw new Exception("Invalid Bill Data");
-//                    }
-
-//                    var customerData = new CreateBillPaymentCredit_DTO()
-//                    {
-//                        FirstName = Name,
-//                        Address = Address,
-//                        PhoneNo = PhoneNumber,
-//                        MenuOrderId = createCustomerBillDTO.MenuOrderId,
-//                        TotalBillAmount = (decimal)retData.PaidAmount,
-//                        PaidAmount = createCustomerBillDTO.PaidAmount,
-//                        PaymentMethod = createCustomerBillDTO.PaymentMethod,
-//                        CreditLimit = createCustomerBillDTO.CreditLimit,
-//                        BankId = createCustomerBillDTO.BankId
-//                    };
-
-//                    await _billPaymentCreditService.CreateBillPaymentCredit(customerData, token);
-//                }
-
-//                int finalBankId = BankId ?? 0;
-//                if (type == PaymentTypeMaybeCredit.Bank && finalBankId != 0)
-//                {
-//                    var insertBankData = new BankDepositDto()
-//                    {
-//                        BankId = finalBankId,
-//                        DepositedBy = GeneralUtility.GetCurrentUserName(_httpContextAccessor),
-//                        Amount = (decimal)retData.PaidAmount,
-//                        Remarks = salesRemark,
-//                        ValueDate = GeneralUtility.GetCurrentDateTime()
-//                    };
-//                    await _bankService.CreateTransactionAsync(insertBankData);
-//                }
-
-//                return Ok("updated status successfully");
-//            }
-//            catch (ArgumentException ex)
-//            {
-//                _logger.LogError(ex, $"Error occurred for CustomerOnCredit : {ex.Message}");
-//                return BadRequest(new { message = ex.Message });
-//            }
-//            catch (Exception ex)
-//            {
-//                _logger.LogError($"Error occurred  for CustomerOnCredit : {ex.Message}", ex);
-//                return StatusCode(500, new { message = $"An error occurred while updating  for CustomerOnCredit : {ex.Message}" });
-//            }
+//            CustomerData.Name = Name;
+//            CustomerData.PhoneNumber = PhoneNumber;
+//            CustomerData.Address = Address;
 //        }
 
-//        [HttpPatch("Billing/Repayment")]
-//        public async Task<IActionResult> PayingOffCredit([FromBody] PayingOffCreditDTO dto)
+//        var retData = await _craftOrderService.MakePayment(id, remarks, CustomerData, AddDiscount, type);
+
+//        string salesRemark = "Sales - " + remarks;
+//        if (type == PaymentTypeMaybeCredit.Cash)
 //        {
-//            try
-//            {
-//                string token = Request.Headers["Authorization"].ToString().Substring("Bearer ".Length).Trim();
-//                if (dto.PayingAmount < 0.0m || dto.PaymentMethod <= 0 || string.IsNullOrWhiteSpace(dto.PhoneNo))
-//                {
-//                    throw new Exception("Invalid Input !!");
-//                }
-//                var result1 = await _billPaymentCreditService.PayingOffOnCredit(dto, token);
-//                return Ok("Repayment done successfully");
-//            }
-//            catch (Exception ex)
-//            {
-//                return BadRequest(ex.Message);
-//            }
+//            await _counterCashTransactionService.AddCashAsync(token, (decimal)retData.PaidAmount, salesRemark);
 //        }
+
+//        if (type == PaymentTypeMaybeCredit.Credit)
+//        {
+//            if (Name == null || PhoneNumber == null || Address == null)
+//            {
+//                throw new Exception("Invalid customer data provided. please fill all fields !!!");
+//            }
+
+//            if (createCustomerBillDTO == null)
+//            {
+//                throw new Exception("Bill information required");
+//            }
+
+//            if (createCustomerBillDTO.MenuOrderId == 0 || createCustomerBillDTO.PaidAmount < 0)
+//            {
+//                throw new Exception("Invalid Bill Data");
+//            }
+
+//            var customerData = new CreateBillPaymentCredit_DTO()
+//            {
+//                FirstName = Name,
+//                Address = Address,
+//                PhoneNo = PhoneNumber,
+//                MenuOrderId = createCustomerBillDTO.MenuOrderId,
+//                TotalBillAmount = (decimal)retData.PaidAmount,
+//                PaidAmount = createCustomerBillDTO.PaidAmount,
+//                PaymentMethod = createCustomerBillDTO.PaymentMethod,
+//                CreditLimit = createCustomerBillDTO.CreditLimit,
+//                BankId = createCustomerBillDTO.BankId
+//            };
+
+//            await _billPaymentCreditService.CreateBillPaymentCredit(customerData, token);
+//        }
+
+//        int finalBankId = BankId ?? 0;
+//        if (type == PaymentTypeMaybeCredit.Bank && finalBankId != 0)
+//        {
+//            var insertBankData = new BankDepositDto()
+//            {
+//                BankId = finalBankId,
+//                DepositedBy = GeneralUtility.GetCurrentUserName(_httpContextAccessor),
+//                Amount = (decimal)retData.PaidAmount,
+//                Remarks = salesRemark,
+//                ValueDate = GeneralUtility.GetCurrentDateTime()
+//            };
+//            await _bankService.CreateTransactionAsync(insertBankData);
+//        }
+
+//        return Ok("updated status successfully");
+//    }
+//    catch (ArgumentException ex)
+//    {
+//        _logger.LogError(ex, $"Error occurred for CustomerOnCredit : {ex.Message}");
+//        return BadRequest(new { message = ex.Message });
+//    }
+//    catch (Exception ex)
+//    {
+//        _logger.LogError($"Error occurred  for CustomerOnCredit : {ex.Message}", ex);
+//        return StatusCode(500, new { message = $"An error occurred while updating  for CustomerOnCredit : {ex.Message}" });
+//    }
+//}
+
+//[HttpPatch("Billing/Repayment")]
+//public async Task<IActionResult> PayingOffCredit([FromBody] PayingOffCreditDTO dto)
+//{
+//    try
+//    {
+//        string token = Request.Headers["Authorization"].ToString().Substring("Bearer ".Length).Trim();
+//        if (dto.PayingAmount < 0.0m || dto.PaymentMethod <= 0 || string.IsNullOrWhiteSpace(dto.PhoneNo))
+//        {
+//            throw new Exception("Invalid Input !!");
+//        }
+//        var result1 = await _billPaymentCreditService.PayingOffOnCredit(dto, token);
+//        return Ok("Repayment done successfully");
+//    }
+//    catch (Exception ex)
+//    {
+//        return BadRequest(ex.Message);
+//    }
+//}
 
 
 //    }

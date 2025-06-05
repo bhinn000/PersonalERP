@@ -10,18 +10,21 @@ namespace PersonalERP.Services
         private readonly ICustomerRepo _customerRepo;
         private readonly IArtPieceRepo _artPieceRepo;
         private readonly IUserContextService _userContextService;
+        private readonly IBillPaymentCreditRepo _billPaymentCreditRepo;
 
         public CraftsOrderService(
             ICraftsOrderRepo craftsOrderRepo,
              ICustomerRepo customerRepo,
              IArtPieceRepo artPieceRepo,
-             IUserContextService userContextService
+             IUserContextService userContextService,
+             IBillPaymentCreditRepo billPaymentCreditRepo
             )
         {
             _craftsOrderRepo = craftsOrderRepo;
             _customerRepo = customerRepo;
             _artPieceRepo = artPieceRepo;
             _userContextService = userContextService;
+            _billPaymentCreditRepo = billPaymentCreditRepo;
         }
 
 
@@ -136,11 +139,28 @@ namespace PersonalERP.Services
                 {
                     theCustomer = oldCustomer;
                     var totalValueForOrderedArtYet = orderedArtInfo.Price + theCustomer.TotalBillAmount;
-                    var totalBillPayableRemForOne = orderedArtInfo.Price + theCustomer.TotalBillPayable;
+                    var totalBillPayableRemForOne = orderedArtInfo.Price + theCustomer.TotalBillPayable - createCraftsOrderDto.InitialPayment??0m;
 
                     //Id = theCustomer.Id,
                     theCustomer.TotalBillAmount = totalValueForOrderedArtYet;
                     theCustomer.TotalBillPayable = totalBillPayableRemForOne;
+                    theCustomer.TotalBillPaid = (theCustomer.TotalBillPaid??0m) + createCraftsOrderDto.InitialPayment;
+
+                    //theCustomer.CurrentCreditLimit = (theCustomer.CurrentCreditLimit ?? 0m)
+                    //    - orderedArtInfo.Price + (createCraftsOrderDto.InitialPayment ?? 0m);
+
+                    //await _customerRepo.UpdateAsync(theCustomer);
+
+                    // Use InitialCreditLimit if CurrentCreditLimit is null
+                    var baseCredit = theCustomer.CurrentCreditLimit ?? theCustomer.InitialCreditLimit;
+                    var updatedCredit = baseCredit - orderedArtInfo.Price + (createCraftsOrderDto.InitialPayment ?? 0m);
+
+                    if (updatedCredit < 0)
+                    {
+                        throw new Exception("Insufficient credit limit.");
+                    }
+
+                    theCustomer.CurrentCreditLimit = updatedCredit;
 
                     await _customerRepo.UpdateAsync(theCustomer);
                 }
@@ -153,7 +173,6 @@ namespace PersonalERP.Services
                         throw new Exception("Seem like new customer , please give all information");
                     }
 
-     
                     theCustomer = new Customer
                     {
                         UserId = createCraftsOrderDto.CustomerId,
@@ -161,12 +180,15 @@ namespace PersonalERP.Services
                         Address = createCraftsOrderDto.Address,
                         PhoneNum = createCraftsOrderDto.PhoneNum,
                         TotalBillAmount = orderedArtInfo.Price,
-                        TotalBillPayable = orderedArtInfo.Price,
+                        TotalBillPaid=createCraftsOrderDto.InitialPayment,
+                        TotalBillPayable = orderedArtInfo.Price - (  createCraftsOrderDto.InitialPayment ?? 0m),
                         InitialCreditLimit = createCraftsOrderDto.InitialCreditLimit.Value,
                         CreatedDate = DateTime.UtcNow,
                         CreatedBy = _userContextService.GetCurrentUsername() ?? "UnknownUser",
-                    
-                     };
+                        CurrentCreditLimit = createCraftsOrderDto.InitialCreditLimit.Value
+                        - orderedArtInfo.Price + (createCraftsOrderDto.InitialPayment ?? 0m),
+
+                    };
                     await _customerRepo.AddAsync(theCustomer);
                 }
               
@@ -186,7 +208,18 @@ namespace PersonalERP.Services
 
                 var craftsOrder=await _craftsOrderRepo.CreateAsync(newOrder);
 
-    
+                var newBPaidRecord = new BillPaymentCredit
+                { 
+                    BillAmount = orderedArtInfo.Price,
+                    PaidAmount=createCraftsOrderDto.InitialPayment,
+                    PaymentReceivable=createCraftsOrderDto.ArtId - createCraftsOrderDto.InitialPayment,
+                    CustomerId=theCustomer.Id,
+                    IsInitialPayment=true,
+                    CraftsOrderId=newOrder.Id,
+                    CompletelyPaid= (orderedArtInfo.Price - (createCraftsOrderDto.InitialPayment ?? 0m)) == 0m
+                };
+
+                await _billPaymentCreditRepo.AddAsync(newBPaidRecord);
 
                 var artPiece = await _artPieceRepo.GetArtPiece(createCraftsOrderDto.ArtId);
 
