@@ -212,14 +212,24 @@ namespace PersonalERP.Services
                 { 
                     BillAmount = orderedArtInfo.Price,
                     PaidAmount=createCraftsOrderDto.InitialPayment,
-                    PaymentReceivable=createCraftsOrderDto.ArtId - createCraftsOrderDto.InitialPayment,
+                    PaymentReceivable=orderedArtInfo.Price - createCraftsOrderDto.InitialPayment,
                     CustomerId=theCustomer.Id,
                     IsInitialPayment=true,
                     CraftsOrderId=newOrder.Id,
-                    CompletelyPaid= (orderedArtInfo.Price - (createCraftsOrderDto.InitialPayment ?? 0m)) == 0m
+                    CompletelyPaid= (orderedArtInfo.Price - (createCraftsOrderDto.InitialPayment ?? 0m)) == 0m,
+                    CreatedDate = DateTime.UtcNow,
+                    CreatedBy = _userContextService.GetCurrentUsername() ?? "UnknownUser",
+
                 };
 
-                await _billPaymentCreditRepo.AddAsync(newBPaidRecord);
+                var newBPaidRec= await _billPaymentCreditRepo.AddAsync(newBPaidRecord);
+
+                if(newBPaidRec is not null)
+                {
+                    newOrder.BillPaymentId = newBPaidRecord.Id;
+                    await _craftsOrderRepo.UpdateAsync(newOrder);
+                }
+             
 
                 var artPiece = await _artPieceRepo.GetArtPiece(createCraftsOrderDto.ArtId);
 

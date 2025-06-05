@@ -109,5 +109,20 @@ namespace PersonalERP.Repo
                 throw new Exception($"An error occurred while deleting the order: {ex.Message}", ex);
             }
         }
+
+        public async Task UpdateAsync(CraftsOrder craftsOrder)
+        {
+            try
+            {
+                _appDbContext.CraftsOrders.Update(craftsOrder);
+                await _appDbContext.SaveChangesAsync();
+                //return craftsOrder;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Problem here");
+            }
+        }
+
     }
 }

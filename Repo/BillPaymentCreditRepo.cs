@@ -59,7 +59,7 @@ namespace PersonalERP.Repo
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error in BillPaymentCreditRepo.AddAsync");
-                return null;
+                throw new Exception(ex.Message);
             }
         }
 
