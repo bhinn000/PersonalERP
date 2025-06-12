@@ -251,7 +251,7 @@ namespace PersonalERP.Services
             }
         }
 
-        public async Task<CraftsOrder?> GetByIdAsync(int id)
+        public async Task<CraftsOrderDTO?> GetByIdAsync(int id)
         {
 
             var craftsOrder = await _craftsOrderRepo.GetByIdAsync(id);
@@ -259,9 +259,17 @@ namespace PersonalERP.Services
             {
                 throw new KeyNotFoundException("There is no specific crafts order info");
             }
-            return craftsOrder;
-
-
+            return new CraftsOrderDTO
+            {
+                Id = craftsOrder.Id,
+                OrderRef = craftsOrder.OrderRef,
+                ArtName = craftsOrder.ArtName,
+                Price = craftsOrder.Price,
+                Description = craftsOrder.Description,
+                CustomerName = craftsOrder.Customer?.Name,
+                CustomerId = craftsOrder.CustomerId,
+                ArtId = craftsOrder.ArtId
+            };
         }
 
         public async Task<IEnumerable<CraftsOrderDTO>> GetAllAsync()
@@ -276,7 +284,9 @@ namespace PersonalERP.Services
                      ArtName = order.ArtName,
                      Price = order.Price,
                      Description = order.Description,
-                     CustomerName = order.Customer.Name
+                     CustomerName = order.Customer.Name,
+                     CustomerId=order.CustomerId,
+                     ArtId=order.ArtId
                  });
             }
             catch (Exception ex)

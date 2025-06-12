@@ -28,7 +28,7 @@
         public string CustomerName { get; set; }
 
         public int ArtId { get; set; }
-        public string ArtTitle { get; set; }
+
     }
 
 
