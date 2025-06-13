@@ -8,7 +8,7 @@
         public decimal BillAmount { get; set; }
         public decimal? PaidAmount { get; set; }
         public decimal? PaymentReceivable { get; set; }
-        public decimal? CreditLimit { get; set; } // no need in this table
+        public decimal? CreditLimit { get; set; } // no need in this table , remove paxi
 
         //public decimal RemainingAmount { get; set; }
         public int? PaymentMethod { get; set; } // bank=>bank option (NICA , esewa) ; cash
