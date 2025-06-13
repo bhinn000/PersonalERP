@@ -2,18 +2,21 @@
 using PersonalERP.DTO;
 using PersonalERP.Entity;
 using PersonalERP.Interface;
+using PersonalERP.Services;
 
 namespace PersonalERP.Repo
 {
     public class PayingOffCreditRepo : IPayingOffCreditRepo
     {
+        private readonly IUserContextService _userContextService;
         private readonly AppDbContext _context;
         private readonly ILogger<PayingOffCreditRepo> _logger;
 
-        public PayingOffCreditRepo(AppDbContext context, ILogger<PayingOffCreditRepo> logger)
+        public PayingOffCreditRepo(AppDbContext context, ILogger<PayingOffCreditRepo> logger, IUserContextService userContextService)
         {
             _context = context;
             _logger = logger;
+            _userContextService = userContextService;
         }
 
         public async Task<List<PayingOffCredit>> GetAllAsync()
@@ -57,7 +60,9 @@ namespace PersonalERP.Repo
                     TotalBillPaid = credit.TotalBillPaid,
                     TotalBillRemaining = credit.TotalBillRemaining,
                     BankId = credit.BankId,
-                    BPId = credit.BPId
+                    BPId = credit.BPId,
+                    CreatedBy = _userContextService.GetCurrentUsername() ?? "UnknownUser",
+                    CreatedDate = DateTime.UtcNow,
                 };
 
                 _context.PayingOffCredits.Add(entity);

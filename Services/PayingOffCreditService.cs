@@ -78,6 +78,7 @@ namespace PersonalERP.Services
                 BP.PaidAmount = (BP.PaidAmount ?? 0) + creditDto.TotalBillPaid;
                 BP.PaymentReceivable = BP.PaymentReceivable - creditDto.TotalBillPaid;
                 BP.IsInitialPayment = false;
+                BP.PaymentMethod = creditDto.PaymentMethod;
                 BP.CompletelyPaid = BP.PaymentReceivable <= 0;
                 BP.ModifiedBy = _userContextService.GetCurrentUsername() ?? "UnknownUser";
                 BP.ModifiedDate = DateTime.UtcNow;
@@ -143,7 +144,7 @@ namespace PersonalERP.Services
         //Helper methods for mapping
         private PayingOffDTO MapToDTO(PayingOffCredit entity)
         {
-            return new PayingOffDTO
+            var PODTO= new PayingOffDTO
             {
                 Id = entity.Id,
                 PaymentMethod = entity.PaymentMethod,
@@ -152,6 +153,7 @@ namespace PersonalERP.Services
                 BankId = entity.BankId,
                 BPId = entity.BPId
             };
+            return PODTO;
         }
 
         private PayingOffCredit MapToEntity(PayingOffDTO dto , BillPaymentCredit bp)
@@ -174,7 +176,7 @@ namespace PersonalERP.Services
             var totalAmount = bp.BillAmount;
             var remPayingAmount = bp.PaymentReceivable - dto.TotalBillPaid;
 
-            return new PayingOffCredit
+            var POCredit= new PayingOffCredit
             {
                 Id = dto.Id,
                 PaymentMethod = dto.PaymentMethod,
@@ -184,6 +186,7 @@ namespace PersonalERP.Services
                 BankId = dto.BankId,
                 BPId = dto.BPId
             };
+            return POCredit;
         }
     }
 }
