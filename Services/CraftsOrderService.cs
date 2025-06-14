@@ -1,6 +1,7 @@
 ﻿using PersonalERP.DTO;
 using PersonalERP.Entity;
 using PersonalERP.Interface;
+using PersonalERP.Repo;
 
 namespace PersonalERP.Services
 {
@@ -11,13 +12,15 @@ namespace PersonalERP.Services
         private readonly IArtPieceRepo _artPieceRepo;
         private readonly IUserContextService _userContextService;
         private readonly IBillPaymentCreditRepo _billPaymentCreditRepo;
+        private readonly IPayingOffCreditRepo _payingOffCreditRepo;
 
         public CraftsOrderService(
             ICraftsOrderRepo craftsOrderRepo,
              ICustomerRepo customerRepo,
              IArtPieceRepo artPieceRepo,
              IUserContextService userContextService,
-             IBillPaymentCreditRepo billPaymentCreditRepo
+             IBillPaymentCreditRepo billPaymentCreditRepo,
+             IPayingOffCreditRepo payingOffCreditRepo
             )
         {
             _craftsOrderRepo = craftsOrderRepo;
@@ -25,6 +28,7 @@ namespace PersonalERP.Services
             _artPieceRepo = artPieceRepo;
             _userContextService = userContextService;
             _billPaymentCreditRepo = billPaymentCreditRepo;
+            _payingOffCreditRepo = payingOffCreditRepo;
         }
 
 
@@ -242,6 +246,19 @@ namespace PersonalERP.Services
                     await _artPieceRepo.UpdateAsync(artPiece);
                 }
 
+                var payingOff = new PayingOffCredit
+                {
+                    PaymentMethod = 1,
+                    TotalAmount = orderedArtInfo.Price,
+                    TotalBillPaid = (decimal)createCraftsOrderDto.InitialPayment,
+                    TotalBillRemaining = (decimal)(orderedArtInfo.Price - createCraftsOrderDto.InitialPayment),
+                    BankId = 1,
+                    BPId = newBPaidRec.Id,
+                    CreatedBy = _userContextService.GetCurrentUsername() ?? "UnknownUser",
+                    CreatedDate = DateTime.UtcNow,
+                };
+
+                await _payingOffCreditRepo.AddInitialAsync(payingOff);
 
                 return craftsOrder;
             }

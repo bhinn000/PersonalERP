@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
 using PersonalERP.DTO;
 using PersonalERP.Entity;
 using PersonalERP.Interface;
@@ -74,6 +75,13 @@ namespace PersonalERP.Repo
                 _logger.LogError(ex, "Error adding PayingOffCredit.");
                 return null;
             }
+        }
+
+        public async Task AddInitialAsync(PayingOffCredit credit)
+        {
+            _context.PayingOffCredits.Add(credit);
+            await _context.SaveChangesAsync();
+
         }
 
         public async Task<PayingOffCredit> UpdateAsync(PayingOffCredit credit)
