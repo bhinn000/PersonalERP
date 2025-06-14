@@ -11,4 +11,11 @@
         public int? BankId { get; set; }
         public int BPId { get; set; }
     }
+
+    public class PayingOffResponseDTO
+    {
+        public PayingOffDTO Data { get; set; } = null!;
+        public string? Message { get; set; }
+    }
+
 }

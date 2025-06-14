@@ -51,7 +51,7 @@ namespace PersonalERP.Services
             }
         }
 
-        public async Task<PayingOffDTO> AddAsync(PayingOffDTO creditDto)
+        public async Task<PayingOffResponseDTO> AddAsync(PayingOffDTO creditDto)
         {
             try
             {
@@ -72,6 +72,15 @@ namespace PersonalERP.Services
                     throw new Exception("Customer does not exist.");
                 }
 
+                decimal paidAmount = creditDto.TotalBillPaid;
+                decimal overPayment = 0;
+
+                if (BP.PaymentReceivable < paidAmount)
+                {
+                    overPayment = paidAmount - BP.PaymentReceivable.Value;
+                    creditDto.TotalBillPaid = BP.PaymentReceivable.Value; // Pay only what is required for this BP
+                }
+
                 var entity = MapToEntity(creditDto, BP);
                 var result = await _repo.AddAsync(entity);
 
@@ -85,25 +94,81 @@ namespace PersonalERP.Services
 
                 await _billPaymentCreditRepo.UpdateAsync(BP);
 
+                
+
+                if (overPayment > 0)
+                {
+                    var otherBPs = customer.BillPaymentCredits
+                        .Where(x => x.Id != BP.Id && !x.CompletelyPaid)
+                        .OrderBy(x => x.Id)
+                        .ToList();
+
+                    foreach (var otherBP in otherBPs)
+                    {
+                        if (overPayment <= 0)
+                            break;
+
+                        decimal receivable = otherBP.PaymentReceivable ?? 0;
+                        if (receivable <= 0)
+                            continue;
+
+                        decimal amountToPay = Math.Min(receivable, overPayment);
+
+                        var extraPay = new PayingOffCredit
+                        {
+                            PaymentMethod = creditDto.PaymentMethod,
+                            TotalAmount = otherBP.BillAmount,
+                            TotalBillPaid = amountToPay,
+                            TotalBillRemaining = receivable - amountToPay,
+                            BankId = creditDto.BankId,
+                            BPId = otherBP.Id
+                        };
+
+                        await _repo.AddAsync(extraPay);
+
+                        otherBP.PaidAmount = (otherBP.PaidAmount ?? 0) + amountToPay;
+                        otherBP.PaymentReceivable -= amountToPay;
+                        otherBP.CompletelyPaid = otherBP.PaymentReceivable <= 0;
+                        otherBP.IsInitialPayment = false;
+                        otherBP.PaymentMethod = creditDto.PaymentMethod;
+                        otherBP.ModifiedBy = _userContextService.GetCurrentUsername() ?? "UnknownUser";
+                        otherBP.ModifiedDate = DateTime.UtcNow;
+
+                        await _billPaymentCreditRepo.UpdateAsync(otherBP);
+
+                        overPayment -= amountToPay;
+                    }
+                }
+
                 customer.TotalBillPaid = (customer.TotalBillPaid ?? 0) + creditDto.TotalBillPaid;
                 customer.TotalBillPayable -= creditDto.TotalBillPaid;
+                customer.CurrentCreditLimit = Math.Min(
+                    (customer.CurrentCreditLimit ?? 0) + creditDto.TotalBillPaid,
+                    customer.InitialCreditLimit
+                );
+
                 customer.ModifiedBy = _userContextService.GetCurrentUsername() ?? "UnknownUser";
                 customer.ModifiedDate = DateTime.UtcNow;
 
-                if (customer.TotalBillPayable <= 0)
-                {
-                    customer.CurrentCreditLimit = customer.InitialCreditLimit;
-                }
-
                 await _customerRepo.UpdateAsync(customer);
+                var response = new PayingOffResponseDTO
+                {
+                    Data = MapToDTO(result),
+                    Message = overPayment > 0
+                ? $"Note: Rs. {overPayment} remains after adjusting all pending credits."
+                : null
+                        };
+
+                return response;
 
 
-                return MapToDTO(result);
+                //return MapToDTO(result);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Service error in AddAsync.");
-                return null;
+                throw new Exception(ex.Message);
+                //return null;
             }
         }
 
@@ -168,10 +233,10 @@ namespace PersonalERP.Services
                 throw new Exception("Paid amount must be greater than zero.");
             }
 
-            if (dto.TotalBillPaid > bp.PaymentReceivable)
-            {
-                throw new Exception($"Paid amount ({dto.TotalBillPaid}) cannot exceed the remaining receivable ({bp.PaymentReceivable}).");
-            }
+            //if (dto.TotalBillPaid > bp.PaymentReceivable)
+            //{
+            //    throw new Exception($"Paid amount ({dto.TotalBillPaid}) cannot exceed the remaining receivable ({bp.PaymentReceivable}).");
+            //}
 
             var totalAmount = bp.BillAmount;
             var remPayingAmount = bp.PaymentReceivable - dto.TotalBillPaid;

@@ -38,7 +38,9 @@ namespace PersonalERP.Repo
         {
             try
             {
-                return await _context.Customers.FindAsync(id);
+                return await _context.Customers
+                    .Include(c => c.BillPaymentCredits)
+                    .FirstOrDefaultAsync(c => c.Id == id);
             }
             catch (Exception ex)
             {

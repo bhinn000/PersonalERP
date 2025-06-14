@@ -62,13 +62,29 @@ namespace PersonalERP.Controllers
 
             try
             {
-                var created = await _service.AddAsync(credit);
-                return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+                //var created = await _service.AddAsync(credit);
+                //return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+                var response = await _service.AddAsync(credit);
+
+                if (!string.IsNullOrEmpty(response.Message))
+                {
+                    return CreatedAtAction(nameof(GetById), new { id = response.Data.Id }, new
+                    {
+                        response.Data.Id,
+                        response.Data.BPId,
+                        response.Data.TotalBillPaid,
+                        response.Data.BankId,
+                        response.Data.PaymentMethod,
+                        Message = response.Message
+                    });
+                }
+
+                return CreatedAtAction(nameof(GetById), new { id = response.Data.Id }, response.Data);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error adding PayingOffCredit.");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500,ex.Message);
             }
         }
 

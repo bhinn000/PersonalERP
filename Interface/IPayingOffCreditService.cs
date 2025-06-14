@@ -6,7 +6,7 @@ namespace PersonalERP.Interface
     {
         Task<List<PayingOffDTO>> GetAllAsync();
         Task<PayingOffDTO> GetByIdAsync(int id);
-        Task<PayingOffDTO> AddAsync(PayingOffDTO creditDto);
+        Task<PayingOffResponseDTO> AddAsync(PayingOffDTO creditDto);
         Task<PayingOffDTO> UpdateAsync(PayingOffDTO creditDto);
         Task<bool> DeleteAsync(int id);
     }
