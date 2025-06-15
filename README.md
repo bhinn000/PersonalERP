@@ -1,4 +1,30 @@
+PERSONAL ERP is developed using following tech stack
+
+- .NET 
+- ASP.NET Core Web API
+- Entity Framework Core
+- SQL Server (SSMS)
+- Visual Studio
+- Postman
+- Swagger
+
+<!-- .NET -->
+![.NET](https://img.shields.io/badge/.NET-6.0-blueviolet?logo=dotnet&logoColor=white)
+
+<!-- Visual Studio -->
+![Visual Studio](https://img.shields.io/badge/IDE-Visual%20Studio-5C2D91?logo=visual-studio&logoColor=white)
+
+<!-- Postman -->
+![Postman](https://img.shields.io/badge/API-Tested%20with-Postman-FF6C37?logo=postman&logoColor=white)
+
+<!-- Swagger -->
+![Swagger](https://img.shields.io/badge/API%20Docs-Swagger-brightgreen?logo=swagger&logoColor=white)
+
+<!-- SSMS (Custom badge as it's not available on shields.io) -->
+![SSMS](https://img.shields.io/badge/Database-SSMS-4479A1?logo=microsoftsqlserver&logoColor=white)
+
 _🎨 ArtPiece API_
+
 📍 **GET /api/ArtPiece**
 Fetches a list of all available Art Pieces.
 Returns: Id, Name, Description, and Price.
