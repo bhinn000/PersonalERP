@@ -8,7 +8,7 @@ namespace PersonalERP.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [AllowAnonymous]
+    [Authorize]
     public class PayingOffCreditController : ControllerBase
     {
         private readonly IPayingOffCreditService _service;

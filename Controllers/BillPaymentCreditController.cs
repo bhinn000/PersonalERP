@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PersonalERP.DTO;
 using PersonalERP.Interface;
 using PersonalERP.Services;
@@ -8,6 +9,7 @@ namespace PersonalERP.Controllers
 {
     [ApiController]
     [Route("api/bill-payment-credit")]
+    [Authorize]
     public class BillPaymentCreditController : ControllerBase
     {
         private readonly IBillPaymentCreditService _billPaymentCreditService;

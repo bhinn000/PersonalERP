@@ -11,6 +11,7 @@ namespace PersonalERP
         //public DbSet<BuyPayment> BuyPayments { get; set; }
         public DbSet<BillPaymentCredit> BillPaymentCredits { get; set; }
         public DbSet<PayingOffCredit> PayingOffCredits { get; set; }
+        public DbSet<UserLogins> UserLogins { get; set; }
         //public DbSet<DateTimeEntity> DateTimeEntities { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options) :base(options) 

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PersonalERP.DTO;
 using PersonalERP.Interface;
 
@@ -53,6 +54,7 @@ namespace PersonalERP.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Create([FromBody] CreateArtPieceDTO dto)
         {
             if (dto == null)
@@ -74,6 +76,7 @@ namespace PersonalERP.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateArtPieceDTO dto)
         {
             if (dto == null)
@@ -95,6 +98,7 @@ namespace PersonalERP.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> Delete(int id)
         {
             try
