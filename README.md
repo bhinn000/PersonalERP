@@ -1,13 +1,5 @@
 PERSONAL ERP is developed using following tech stack
 
-- .NET 
-- ASP.NET Core Web API
-- Entity Framework Core
-- SQL Server (SSMS)
-- Visual Studio
-- Postman
-- Swagger
-
 <!-- .NET -->
 ![.NET](https://img.shields.io/badge/.NET-6.0-blueviolet?logo=dotnet&logoColor=white)
 
